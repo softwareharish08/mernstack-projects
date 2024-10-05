@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Home = () => {
+
+    // adding todo function
     const [title, setTitle] = useState('');
     const [priority, setPriority] = useState('');
     const addtodo = async (e) => {
@@ -18,12 +20,34 @@ const Home = () => {
                 })
             })
             const data = await response.json()
-            console.log(data)
+            alert(data)
+            setTitle('')
+            setPriority('')
         } catch (err) {
-            console.error("error occured: " +  err)
+            console.error("error occured: " + err)
 
         }
+
     }
+
+
+    // function to get all todos 
+    const [allTodo, setAllTodo] = useState([])
+    const getTodo = async () => {
+        const url = 'http://localhost:5000/api/todo/gettodo'
+        try {
+            const response = await fetch(url)
+            const data = await response.json()
+            setAllTodo(data)
+        } catch (err) {
+            console.error('error occured: ' + err)
+        }
+    }
+
+    //calling the getTodo function allTodo state changes inside the useEffect hook
+    useEffect(() => {
+        getTodo()
+    }, [allTodo])
 
     return (
         <div className='container my-3'>
@@ -45,7 +69,7 @@ const Home = () => {
                         <select
                             className="form-select"
                             value={priority}
-                            onChange={(e)=>{setPriority(e.target.value)}}
+                            onChange={(e) => { setPriority(e.target.value) }}
                             id="prioritySelect">
                             <option value="" disabled>Select Priority</option>
                             <option name='priority' value="high">High</option>
@@ -66,18 +90,19 @@ const Home = () => {
                 <h3 className='my-3'>Here Your Today's ToDo</h3>
                 <div className=" container todo-list">
                     <ul className="list-group">
-                        <li className="list-group-item">
-                            <input className="form-check-input me-1" type="checkbox" value="" id="firstCheckbox" />
-                            <label className="form-check-label" htmlFor="firstCheckbox">First checkbox</label>
-                        </li>
-                        <li className="list-group-item">
-                            <input className="form-check-input me-1" type="checkbox" value="" id="secondCheckbox" />
-                            <label className="form-check-label" htmlFor="secondCheckbox">Second checkbox</label>
-                        </li>
-                        <li className="list-group-item">
-                            <input className="form-check-input me-1" type="checkbox" value="" id="thirdCheckbox" />
-                            <label className="form-check-label" htmlFor="thirdCheckbox">Third checkbox</label>
-                        </li>
+                        {
+                            allTodo.length > 0 ?
+                                allTodo.map((todo) => (
+                                    <li className="list-group-item" key={todo._id}>
+                                        <input className="form-check-input me-1" type="checkbox" value="" id="firstCheckbox" />
+                                        <label className="form-check-label" htmlFor="firstCheckbox">{todo.title}</label>
+                                    </li>
+                                )) : (
+                                    <li className="list-group-item">
+                                        Todo not found
+                                    </li>
+                                )
+                        }
                     </ul>
                 </div>
             </div>
