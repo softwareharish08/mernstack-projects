@@ -3,6 +3,8 @@
 const express = require('express')
 const app = express()
 const connectToMongodb=  require('./db')
+const cors =  require('cors')
+
 const port = 5000
 
 //importing routers
@@ -10,6 +12,9 @@ const todoRouter=require('./routes/todo.js')
 
 // DATABASE CONNECTION
 connectToMongodb()
+
+// Enable CORS for all routes
+app.use(cors())
 
 // Middleware to parse incoming JSON requests
 app.use(express.json())

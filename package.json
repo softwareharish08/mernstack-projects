@@ -4,8 +4,13 @@
   "description": "todo app",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm start --prefix todo_client\" \"nodemon index.js --prefix todo_server\""
+
   },
   "author": "N Harish",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
 }

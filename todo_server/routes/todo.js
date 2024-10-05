@@ -1,12 +1,18 @@
 const express = require('express')
 const router = express.Router()
+const todo_model = require('../models/todoSchema')
 
-router.post('/addtodo', (req, res) => {
+router.post('/addtodo', async (req, res) => {
     try {
-        const { title, description } = req.body
-        res.status(200).send("todo added successfuly")
+        const { title, priority} = req.body
+        const newTodo= await new todo_model({
+            title:title,
+            priority: priority,
+        })
+        await newTodo.save()
+        res.status(200).json("todo added successfuly")
     }catch(err){
-        res.status(500).send("internal server error: "  + err.message)
+        res.status(500).json("internal server error: "  + err.message)
 
     }
     
