@@ -31,4 +31,21 @@ router.post('/addtodo', async (req, res) => {
     
 })
 
+// api link: 'http://localhost:5000/api/todo/deletetodo/:id'
+router.delete('/deletetodo/:id', async (req, res) => {
+    try {
+        const { id } = req.params; // Retrieve id from URL parameters
+        const deleteTodo = await todo_model.findByIdAndDelete(id)
+        if (!deleteTodo) {
+            return res.status(404).json({ message: 'Todo not found' });
+        }
+        
+        res.status(200).json({ message: 'Todo deleted successfully', deleteTodo });
+    }catch(err){
+        res.status(500).json({ message: "Internal server error: " + err.message });
+
+    }
+    
+})
+
 module.exports = router;

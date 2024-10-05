@@ -49,6 +49,30 @@ const Home = () => {
         getTodo()
     }, [allTodo])
 
+    //function to delete todo
+    const deleteTodo = async (id) => {
+
+        const isConfirmed = window.confirm("Do you really want to delete the todo?");
+        if (!isConfirmed) return; // If the user does not confirm, exit the function
+        
+        const url = `http://localhost:5000/api/todo/deletetodo/${id}`
+        try {
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                throw new Error(errorResponse.message || 'Failed to delete todo');
+            }
+
+        } catch (error) {
+            console.error('Error deleting todo:', error.message);
+        }
+    }
+
     return (
         <div className='container my-3'>
             {/* add todo */}
@@ -96,6 +120,10 @@ const Home = () => {
                                     <li className="list-group-item" key={todo._id}>
                                         <input className="form-check-input me-1" type="checkbox" value="" id="firstCheckbox" />
                                         <label className="form-check-label" htmlFor="firstCheckbox">{todo.title}</label>
+                                        <i
+                                            className="fa-solid fa-xmark fa-xl position-absolute end-0 pt-2 mx-3"
+                                            onClick={() => deleteTodo(todo._id)}
+                                        />
                                     </li>
                                 )) : (
                                     <li className="list-group-item">
