@@ -54,7 +54,7 @@ const Home = () => {
 
         const isConfirmed = window.confirm("Do you really want to delete the todo?");
         if (!isConfirmed) return; // If the user does not confirm, exit the function
-        
+
         const url = `http://localhost:5000/api/todo/deletetodo/${id}`
         try {
             const response = await fetch(url, {
@@ -73,8 +73,37 @@ const Home = () => {
         }
     }
 
+    //function to update the status
+    const [todoStatus, setTodoStatus] = useState(null)
+    const update_status = async (id) => {
+        try {
+            const url = `http://localhost:5000/api/todo/updatetodostatus/${id}`
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            const data=await response.json()
+            setTodoStatus(data)
+        }catch(error){
+            console.error('Error updating todo status:', error.message);
+        }
+        
+    }
+
+    //checking checkbox is checked or not
+    const handleCheckbox = (e, id) => {
+        if(e.target.checked){
+            update_status(id)
+        }else{
+            return;
+        }
+    }
+
     return (
-        <div className='container my-3'>
+        <div className='container my-3 hide-scrollbar' style={{ 'minHeight': '66vh' }}>
+
             {/* add todo */}
             <form onSubmit={addtodo}>
                 <h2 className='my-3'>Add ToDo Here</h2>
@@ -117,13 +146,20 @@ const Home = () => {
                         {
                             allTodo.length > 0 ?
                                 allTodo.map((todo) => (
-                                    <li className="list-group-item" key={todo._id}>
-                                        <input className="form-check-input me-1" type="checkbox" value="" id="firstCheckbox" />
-                                        <label className="form-check-label" htmlFor="firstCheckbox">{todo.title}</label>
-                                        <i
-                                            className="fa-solid fa-xmark fa-xl position-absolute end-0 pt-2 mx-3"
-                                            onClick={() => deleteTodo(todo._id)}
-                                        />
+                                    <li className="list-group-item my-2 d-flex justify-content-between" key={todo._id}>
+                                        <div>
+                                            <input className="form-check-input me-1" onChange={()=>handleCheckbox(todo._id)} type="checkbox" value="" id="firstCheckbox" />
+                                            <label className="form-check-label mx-3" htmlFor="firstCheckbox">{todo.title}</label>
+                                        </div>
+
+                                        <div className=''>
+                                            <span class="badge text-bg-danger mx-3 ">{todo.status}</span>
+                                            <i
+                                                className="fa-solid fa-xmark fa-xl pt-2 mr-2"
+                                                onClick={() => deleteTodo(todo._id)}
+                                            />
+                                        </div>
+
                                     </li>
                                 )) : (
                                     <li className="list-group-item">
