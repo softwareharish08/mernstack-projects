@@ -10,9 +10,9 @@ const todoSchema =new mongoose.Schema({
         required: true
     },
     status: {
-        type: String,
+        type: Boolean,
         required: true,
-        default: 'pending'
+        default: false
 
     }
 })
