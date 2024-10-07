@@ -20,8 +20,8 @@ const Navbar = () => {
                             </li>
                         </ul>
                         <div className="btns">
-                            <button className="btn btn-outline-success mx-2" type="button">Signin</button>
-                            <button className="btn btn-outline-success mx-2" type="button">Signup</button>
+                            <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/signup'>SignUp</Link></button>
+                            <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/login'>Login</Link></button>
                         </div>
                     </div>
                 </div>

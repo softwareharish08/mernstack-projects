@@ -83,10 +83,10 @@ const Home = () => {
                     'Content-Type': 'application/json'
                 }
             })
-        }catch(error){
+        } catch (error) {
             console.error('Error updating todo status:', error.message);
         }
-        
+
     }
 
     //function to update the status to false (pending)
@@ -99,17 +99,17 @@ const Home = () => {
                     'Content-Type': 'application/json'
                 }
             })
-        }catch(error){
+        } catch (error) {
             console.error('Error updating todo status:', error.message);
         }
-        
+
     }
 
     //checking checkbox is checked or not
     const handleCheckbox = (e, id) => {
-        if(e.target.checked){
+        if (e.target.checked) {
             statusDone(id)
-        }else{
+        } else {
             statusPending(id)
         }
     }
@@ -161,19 +161,21 @@ const Home = () => {
                                 allTodo.map((todo) => (
                                     <li className="list-group-item my-2 d-flex justify-content-between" key={todo._id}>
                                         <div>
-                                            <input className="form-check-input me-1" 
-                                            onChange={(e)=>handleCheckbox(e, todo._id)} 
-                                            checked={todo.status===true}
-                                            type="checkbox" value="" id="firstCheckbox" />
+                                            <input className="form-check-input me-1"
+                                                onChange={(e) => handleCheckbox(e, todo._id)}
+                                                checked={todo.status === true}
+                                                type="checkbox" value="" id="firstCheckbox" />
                                             <label className="form-check-label mx-3" htmlFor="firstCheckbox">{todo.title}</label>
                                         </div>
 
-                                        <div className=''>
+                                        <div className='d-flex justify-center'>
+                                            <h6 className='mb-0'><span className="badge" style={todo.priority==='high'? {backgroundColor:'red'}: todo.priority==='medium'? {backgroundColor:'yellow'}: {backgroundColor:'green'}}>{todo.priority}</span></h6>
+
                                             <span className={`badge mx-3 `}
-                                            style={todo.status===true? {backgroundColor:'green'}:{backgroundColor:'red'}}
-                                            >{todo.status===true? "done": "pending"}</span>
+                                                style={todo.status === true ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
+                                            >{todo.status === true ? "done" : "pending"}</span>
                                             <i
-                                                className="fa-solid fa-xmark fa-xl pt-2 mr-2"
+                                                className="fa-solid fa-xmark fa-xl mt-2 mr-2"
                                                 onClick={() => deleteTodo(todo._id)}
                                             />
                                         </div>
