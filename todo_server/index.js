@@ -9,6 +9,7 @@ const port = 5000
 
 //importing routers
 const todoRouter=require('./routes/todo.js')
+const authRouter=require('./routes/auth.js')
 
 // DATABASE CONNECTION
 connectToMongodb()
@@ -21,6 +22,7 @@ app.use(express.json())
 
 // Mounting the to-do router at /api/todo
 app.use('/api/todo', todoRouter )
+app.use('/api/todo/auth', authRouter )
 
 // Starting the server and listening on the specified port
 app.listen(port, () => {
