@@ -10,7 +10,7 @@ router.post('/signup', async (req, res) => {
 
         const existindUser = await userModel.findOne({email})
         if (existindUser) {
-            return res.status(400).json({ message: 'user already exists' })
+            return res.status(400).json({ message: 'user with this email already exists' })
         }
 
         const saltRound=10
