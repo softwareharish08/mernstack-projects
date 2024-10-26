@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import {useNavigate} from 'react-router-dom'
 
 const Signup = () => {
     const [fullname, setFullName] = useState(null)
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const navigate= useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -22,6 +24,9 @@ const Signup = () => {
             })
             const data = await response.json()
             alert(data.message)
+            localStorage.setItem('token', data.token);
+            console.log("Token stored successfully");
+            navigate('/login')
         } catch (error) {
             console.error("error occured" + error.message)
         }
@@ -58,7 +63,7 @@ const Signup = () => {
                         id="exampleInputPassword1" />
                 </div>
                 <div className='text-center'>
-                    <button type="submit" className="btn btn-primary">Submit</button>
+                    <button type="submit" className="btn btn-primary">SignUp</button>
                 </div>
             </form>
 
