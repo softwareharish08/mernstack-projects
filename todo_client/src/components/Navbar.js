@@ -1,7 +1,14 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
+    const token = localStorage.getItem('token')
+    const navigate = useNavigate()
+
+    const logout = () => {
+        localStorage.clear()
+        navigate('/')
+    }
     return (
         <div>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -19,9 +26,20 @@ const Navbar = () => {
                                 <Link className="nav-link" to="/yourtodo">Your ToDo</Link>
                             </li>
                         </ul>
-                        <div className="btns">
-                            <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/signup'>SignUp</Link></button>
-                            <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/login'>Login</Link></button>
+                        <div className="btns">{
+                            !token ? (
+                                <>
+                                    <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/signup'>SignUp</Link></button>
+                                    <button className="btn btn-outline-success mx-2" type="button"><Link className='text-decoration-none' to='/login'>Login</Link></button>
+                                </>
+                            ) : (
+
+                                <>
+                                    <button className="btn btn-outline-success mx-2" type="button" onClick={logout}>LogOut</button>
+                                </>
+                            )
+                        }
+
                         </div>
                     </div>
                 </div>

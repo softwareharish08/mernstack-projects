@@ -1,10 +1,13 @@
 import './App.css';
 import router from './router/routes';
-import {RouterProvider} from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 
 function App() {
+  window.addEventListener('beforeunload', () => {
+    localStorage.clear();
+  });
   return (
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   );
 }
 

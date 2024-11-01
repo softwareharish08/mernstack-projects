@@ -5,27 +5,49 @@ const Home = () => {
     // adding todo function
     const [title, setTitle] = useState('');
     const [priority, setPriority] = useState('');
+
     const addtodo = async (e) => {
         e.preventDefault();
         const url = 'http://localhost:5000/api/todo/addtodo'
         try {
+            const token = localStorage.getItem('token')
+            if (!token) {
+                alert('Please log in to add a todo.');
+                return; // Exit the function early if no token is present
+            }
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'auth-token': token ? token : ''
                 },
                 body: JSON.stringify({
                     "title": title,
                     "priority": priority
                 })
+
             })
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('Unauthorized access. Please log in again.');
+                } else {
+                    alert(`Error: ${response.statusText}`);
+                }
+                return; // Exit if there's an error
+            }
+
             const data = await response.json()
-            alert(data)
+            alert('Todo added successfully');
+
+            // Optimistically update the allTodo state
+            setAllTodo((prevTodos) => [...prevTodos, data]);
+            getTodo()
             setTitle('')
             setPriority('')
         } catch (err) {
-            console.error("error occured: " + err)
-
+            console.error("error occured: " + err.message)
+            alert('An error occurred while adding the todo. Please try again.');
         }
 
     }
@@ -36,7 +58,19 @@ const Home = () => {
     const getTodo = async () => {
         const url = 'http://localhost:5000/api/todo/gettodo'
         try {
-            const response = await fetch(url)
+            const token = localStorage.getItem('token')
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': token ? token : ''
+                }
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json()
             setAllTodo(data)
         } catch (err) {
@@ -46,8 +80,13 @@ const Home = () => {
 
     //calling the getTodo function allTodo state changes inside the useEffect hook
     useEffect(() => {
-        getTodo()
-    }, [allTodo])
+        if(localStorage.getItem('token')){
+            getTodo()
+        } 
+        else{
+            return
+        }
+    }, [])
 
     //function to delete todo
     const deleteTodo = async (id) => {
@@ -57,12 +96,15 @@ const Home = () => {
 
         const url = `http://localhost:5000/api/todo/deletetodo/${id}`
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(url, {
                 method: "DELETE",
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'auth-token':  token ? token : ''
                 }
             })
+            getTodo()
             if (!response.ok) {
                 const errorResponse = await response.json();
                 throw new Error(errorResponse.message || 'Failed to delete todo');
@@ -83,6 +125,12 @@ const Home = () => {
                     'Content-Type': 'application/json'
                 }
             })
+            // Update the state immediately after status change
+            setAllTodo((prevTodos) =>
+                prevTodos.map((todo) =>
+                    todo._id === id ? { ...todo, status: true } : todo // <-- Updated here
+                ))
+
         } catch (error) {
             console.error('Error updating todo status:', error.message);
         }
@@ -99,6 +147,13 @@ const Home = () => {
                     'Content-Type': 'application/json'
                 }
             })
+            // Update the state immediately after status change
+            setAllTodo((prevTodos) =>
+                prevTodos.map((todo) =>
+                    todo._id === id ? { ...todo, status: false } : todo // <-- Updated here
+                )
+            );
+            
         } catch (error) {
             console.error('Error updating todo status:', error.message);
         }
@@ -145,7 +200,10 @@ const Home = () => {
                     </div>
                 </div>
                 <div className="btn">
-                    <button type="submit" className="btn btn-primary">Add ToDo</button>
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={localStorage.getItem('token') ? false : true}>Add ToDo</button>
                 </div>
             </form>
 
@@ -158,24 +216,25 @@ const Home = () => {
                     <ul className="list-group">
                         {
                             allTodo.length > 0 ?
-                                allTodo.map((todo) => (
-                                    <li className="list-group-item my-2 d-flex justify-content-between" key={todo._id}>
+                                allTodo.map((todo, index) => (
+                                    <li className="list-group-item my-2 d-flex justify-content-between"  key={index}>
+
                                         <div>
                                             <input className="form-check-input me-1"
                                                 onChange={(e) => handleCheckbox(e, todo._id)}
                                                 checked={todo.status === true}
-                                                type="checkbox" value="" id="firstCheckbox" />
-                                            <label className="form-check-label mx-3" htmlFor="firstCheckbox">{todo.title}</label>
+                                                type="checkbox" value="" id={`checkbox-${todo._id}`} />
+                                            <label className="form-check-label mx-3" htmlFor={`checkbox-${todo._id}`}>{todo.title}</label>
                                         </div>
 
-                                        <div className='d-flex justify-center'>
-                                            <h6 className='mb-0'><span className="badge" style={todo.priority==='high'? {backgroundColor:'red'}: todo.priority==='medium'? {backgroundColor:'yellow'}: {backgroundColor:'green'}}>{todo.priority}</span></h6>
+                                        <div className='d-flex justify-content-center'>
+                                            <h6 className='mb-0'><span className="badge" style={todo.priority === 'high' ? { backgroundColor: 'red' } : todo.priority === 'medium' ? { backgroundColor: 'yellow' } : { backgroundColor: 'green' }}>{todo.priority}</span></h6>
 
                                             <span className={`badge mx-3 `}
                                                 style={todo.status === true ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
                                             >{todo.status === true ? "done" : "pending"}</span>
                                             <i
-                                                className="fa-solid fa-xmark fa-xl mt-2 mr-2"
+                                                className="fa-solid fa-xmark fa-xl mt-2 me-6"
                                                 onClick={() => deleteTodo(todo._id)}
                                             />
                                         </div>

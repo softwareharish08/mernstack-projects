@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 const jwt_key = 'mySecretKey'
 const { body, validationResult } = require('express-validator')
 const fetchUser= require('../middleware/fetchUser')
-
+let login= false
 
 // api link: 'http://localhost:5000/api/todo/auth/signup'
 router.post('/signup', [
@@ -63,9 +63,10 @@ router.post('/login', async (req, res) => {
     const payload={
         user:{id: foundUser._id}
     }
-    const token = jwt.sign(payload, jwt_key, { expiresIn: '1h' })
+    const token = jwt.sign(payload, jwt_key)
+    login=true
 
-    res.json({token})
+    res.json({login, token})
 
 })
 
