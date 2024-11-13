@@ -1,4 +1,5 @@
 import './App.css';
+import AlertState from './context/AlertState';
 import router from './router/routes';
 import { RouterProvider } from 'react-router-dom'
 
@@ -7,7 +8,9 @@ function App() {
     localStorage.clear();
   });
   return (
-    <RouterProvider router={router} />
+    <AlertState>
+      <RouterProvider router={router} />
+    </AlertState>
   );
 }
 

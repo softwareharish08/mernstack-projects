@@ -1,13 +1,19 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import AlertContext from '../context/AlertContext'
 
 const Navbar = () => {
     const token = localStorage.getItem('token')
     const navigate = useNavigate()
+    const {showAlert}= useContext(AlertContext)
 
     const logout = () => {
         localStorage.clear()
-        navigate('/')
+        showAlert('logout succesfuly', 'success')
+        setTimeout(() => {
+            navigate('/login');
+        }, 3000); // Delay navigation to allow alert to display
+        
     }
     return (
         <div>
